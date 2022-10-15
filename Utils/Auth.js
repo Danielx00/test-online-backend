@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv/config');
+const passport = require('passport');
 const User = require('../db/models/User');
 /**
  * @DESC REGISTER USER
@@ -14,6 +15,7 @@ const validateUserEmail = async (email) => {
   const user = await User.findOne({ email });
   return !user;
 };
+
 const userRegister = async (user, res) => {
   try {
     const userIndex = await validateUserIndex(user.numberOfIndex);
@@ -47,6 +49,30 @@ const userRegister = async (user, res) => {
   }
 };
 
+/**
+ * @DESC Passport middlewares
+ */
+const userAuth = passport.authenticate('jwt', { session: false });
+
+const serializeUser = (user) => ({
+  name: user.name,
+  lastName: user.lastName,
+  numberOfIndex: user.numberOfIndex,
+  img: user.img,
+  email: user.email,
+  faculties: user.faculties,
+});
+
+const checkRole = (roles) => (req, res, next) => {
+  if (roles.includes(req.user.role)) {
+    return next();
+  }
+  return res.status(401).json('Unauthorized');
+};
+
+/**
+ * @DESC LOGIN USER
+ */
 const userLogin = async (user, res) => {
   const { email, password } = user;
   // check if the user is on the db
@@ -63,7 +89,6 @@ const userLogin = async (user, res) => {
     const token = jwt.sign(
       {
         user_id: findUser._id,
-        role: findUser.role,
         email: findUser.email,
       },
       process.env.SECRET_KEY,
@@ -92,4 +117,10 @@ const userLogin = async (user, res) => {
   });
 };
 
-module.exports = { userRegister, userLogin };
+module.exports = {
+  userRegister,
+  userLogin,
+  userAuth,
+  serializeUser,
+  checkRole,
+};
