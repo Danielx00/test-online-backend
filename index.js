@@ -18,6 +18,8 @@ require('./middlewares/passport')(passport);
 // User routes
 app.use('/api/users', require('./routes/users'));
 
+app.use('/api/faculties', require('./routes/faculties'));
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
