@@ -95,6 +95,12 @@ const userLogin = async (user, res) => {
       {
         user_id: findUser._id,
         email: findUser.email,
+        faculties: findUser.faculties,
+        img: findUser.img,
+        name: findUser.name,
+        lastName: findUser.lastName,
+        numberOfIndex: findUser.numberOfIndex,
+        role: findUser.role,
       },
       process.env.SECRET_KEY,
       { expiresIn: '2 days' }
@@ -107,13 +113,11 @@ const userLogin = async (user, res) => {
       img: findUser.img,
       numberOfIndex: findUser.numberOfIndex,
       faculties: findUser.faculties,
-      token: `Bearer ${token}`,
       expiresIn: 48,
     };
     return res.status(200).json({
       ...result,
-      message: 'User logged in correctly',
-      success: true,
+      token: `Bearer ${token}`,
     });
   }
   return res.status(403).json({
