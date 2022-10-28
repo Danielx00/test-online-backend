@@ -32,10 +32,12 @@ const UserSchema = new Schema(
       required: true,
       unique: true,
     },
-    faculties: {
-      type: Array,
-      required: true,
-    },
+    faculties: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'faculties',
+      },
+    ],
   },
   { timestamps: true }
 );

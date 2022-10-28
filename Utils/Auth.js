@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv/config');
 const passport = require('passport');
 const User = require('../db/models/User');
+const Faculty = require('../db/models/Faculty');
 /**
  * @DESC REGISTER USER
  */
@@ -36,6 +37,10 @@ const userRegister = async (user, res) => {
     const hashedPassword = await bcrypt.hash(user.password, 12);
     // creat new user
     const newUser = new User({ ...user, password: hashedPassword });
+    await Faculty.updateMany(
+      { _id: newUser.faculties },
+      { $push: { users: newUser.numberOfIndex } }
+    );
     await newUser.save();
     return res.status(201).json({
       message: 'User successfully created',

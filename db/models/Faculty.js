@@ -5,6 +5,7 @@ const FacultySchema = new Schema({
     type: String,
     required: true,
   },
+  users: [{ type: Schema.Types.Number, ref: 'users' }],
 });
 
 module.exports = model('faculties', FacultySchema);
