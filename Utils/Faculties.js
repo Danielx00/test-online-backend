@@ -7,7 +7,14 @@ const getAllFaculties = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-  res.status(200).json(data);
+
+  const mappedFaculty = data.map((faculty) => ({
+    id: faculty._id,
+    title: faculty.title,
+  }));
+  res.status(200).json({
+    faculties: mappedFaculty,
+  });
 };
 
 module.exports = { getAllFaculties };
