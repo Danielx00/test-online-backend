@@ -137,10 +137,48 @@ const userLogin = async (user, res) => {
   });
 };
 
+const updateUserProfile = async (req, res) => {
+  if (Object.keys(req.body).length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Data to update can not be empty',
+    });
+  }
+  const { user } = req;
+  const { userId } = req.params;
+  const faculties = await Faculty.find({ _id: { $in: user.faculties } });
+  const mappedFaculties = faculties.map(({ title }) => title);
+  if (user.id === req.params.userId) {
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 12);
+    }
+    await User.findByIdAndUpdate(userId, req.body, { new: true })
+      .then((data) => {
+        res.status(200).json({
+          name: data?.name,
+          lastName: data?.lastName,
+          numberOfIndex: data?.numberOfIndex,
+          email: data?.email,
+          faculties: mappedFaculties,
+        });
+      })
+      .catch((err) => {
+        res.status(400).json({
+          message: 'Something went wrong, try again later: ',
+          err,
+        });
+      });
+  } else {
+    return res.status(403).json({
+      message: 'You dont have permission to do it',
+    });
+  }
+};
 module.exports = {
   userRegister,
   userLogin,
   userAuth,
   serializeUser,
   checkRole,
+  updateUserProfile,
 };

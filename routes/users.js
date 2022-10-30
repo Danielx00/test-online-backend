@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const { login } = require('passport/lib/http/request');
 const {
   userRegister,
   userLogin,
   userAuth,
   serializeUser,
   checkRole,
+  updateUserProfile,
 } = require('../Utils/Auth');
 // login
 router.post('/login', async (req, res) => {
@@ -20,6 +20,10 @@ router.post('/register', async (req, res) => {
 // user profile
 router.get('/profile', userAuth, async (req, res) => {
   await serializeUser(req.user, res);
+});
+
+router.patch('/profile/:userId', userAuth, async (req, res) => {
+  await updateUserProfile(req, res);
 });
 
 // todo: delete this route its just for testing
