@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { login } = require('passport/lib/http/request');
 const {
   userRegister,
   userLogin,
@@ -17,9 +18,9 @@ router.post('/register', async (req, res) => {
 });
 
 // user profile
-router.get('/profile', userAuth, async (req, res) =>
-  res.json(serializeUser(req.user))
-);
+router.get('/profile', userAuth, async (req, res) => {
+  await serializeUser(req.user, res);
+});
 
 // todo: delete this route its just for testing
 router.get('/protected', userAuth, checkRole(['employee']), async (req, res) =>

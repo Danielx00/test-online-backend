@@ -59,14 +59,25 @@ const userRegister = async (user, res) => {
  */
 const userAuth = passport.authenticate('jwt', { session: false });
 
-const serializeUser = (user) => ({
-  name: user.name,
-  lastName: user.lastName,
-  numberOfIndex: user.numberOfIndex,
-  img: user.img,
-  email: user.email,
-  faculties: user.faculties,
-});
+const serializeUser = async (user, res) => {
+  try {
+    const faculties = await Faculty.find({ _id: { $in: user.faculties } });
+    const mappedFaculties = faculties.map(({ title }) => title);
+    res.status(200).json({
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      img: user.img,
+      numberOfIndex: user.numberOfIndex,
+      faculties: mappedFaculties,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Internal server error: ${err}`,
+    });
+  }
+};
 
 const checkRole = (roles) => (req, res, next) => {
   if (roles.includes(req.user.role)) {
