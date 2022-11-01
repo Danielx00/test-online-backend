@@ -70,6 +70,7 @@ const serializeUser = async (user, res) => {
       img: user.img,
       numberOfIndex: user.numberOfIndex,
       faculties: mappedFaculties,
+      role: user.role,
     });
   } catch (err) {
     res.status(500).json({
