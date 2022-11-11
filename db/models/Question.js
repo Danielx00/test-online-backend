@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const QuestionClosedSchema = new Schema({
+const Question = new Schema({
   title: {
     type: String,
     required: true,
@@ -10,4 +10,4 @@ const QuestionClosedSchema = new Schema({
     default: null,
   },
 });
-module.exports = model('questions', QuestionClosedSchema);
+module.exports = model('questions', Question);
