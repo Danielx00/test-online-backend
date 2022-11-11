@@ -31,6 +31,10 @@ const ExamSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users',
   },
+  faculty: {
+    type: Schema.Types.ObjectId,
+    ref: 'faculties',
+  },
 });
 
 module.exports = model('exams', ExamSchema);
