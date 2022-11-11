@@ -10,5 +10,9 @@ const SetSchema = new Schema({
     required: true,
   },
   questions: [{ type: Schema.Types.ObjectId, ref: 'questions' }],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'users',
+  },
 });
 module.exports = model('sets', SetSchema);
