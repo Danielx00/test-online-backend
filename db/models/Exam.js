@@ -13,17 +13,18 @@ const ExamSchema = new Schema({
   set: {
     type: Schema.Types.ObjectId,
     ref: 'sets',
+    required: true,
   },
   date: {
     type: Date,
     required: true,
   },
   startExam: {
-    type: Date,
+    type: String,
     required: true,
   },
   endExam: {
-    type: Date,
+    type: String,
     required: true,
   },
   owner: {
