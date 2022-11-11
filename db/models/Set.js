@@ -9,5 +9,6 @@ const SetSchema = new Schema({
     type: String,
     required: true,
   },
+  questions: [{ type: Schema.Types.ObjectId, ref: 'questions' }],
 });
 module.exports = model('sets', SetSchema);
