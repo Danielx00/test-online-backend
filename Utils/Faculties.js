@@ -11,7 +11,9 @@ const getAllFaculties = async (req, res) => {
   const mappedFaculty = data.map((faculty) => ({
     id: faculty._id,
     title: faculty.title,
+    img: faculty.img,
   }));
+  console.log(mappedFaculty);
   res.status(200).json({
     faculties: mappedFaculty,
   });
