@@ -7,7 +7,14 @@ const getSetsByFaculty = async (req, res) => {
     const sets = await Set.find({
       $and: [{ owner: user.id }, { faculty: facultyId }],
     });
-    res.status(200).json(sets);
+    const serializeSets = sets.map((set) => ({
+      _id: set._id,
+      date: set.date,
+      description: set.description,
+      questions: set.questions,
+      title: set.title,
+    }));
+    res.status(200).json(serializeSets);
   } catch (err) {
     res.status(500).json({
       success: false,
