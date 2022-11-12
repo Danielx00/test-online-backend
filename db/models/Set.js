@@ -18,5 +18,9 @@ const SetSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'faculties',
   },
+  date: {
+    type: Date,
+    required: true,
+  },
 });
 module.exports = model('sets', SetSchema);
