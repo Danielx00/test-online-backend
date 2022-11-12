@@ -1,17 +1,11 @@
 const router = require('express').Router();
 const {
-  getUserSets,
   createSet,
   getSetsByFaculty,
   editSet,
   deleteSet,
 } = require('../Utils/Sets');
 const { userAuth, checkRole } = require('../Utils/Auth');
-
-// Get user sets
-router.get('/', userAuth, async (req, res) => {
-  await getUserSets(req.user, res);
-});
 
 // create set on each faculty
 router.post(

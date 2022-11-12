@@ -1,17 +1,5 @@
 const Set = require('../db/models/Set');
 
-const getUserSets = async (user, res) => {
-  try {
-    const sets = await Set.find({ owner: { $in: user.id } });
-    res.status(200).json(sets);
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: `Error: ${err}`,
-    });
-  }
-};
-
 const getSetsByFaculty = async (req, res) => {
   const { user } = req;
   const { facultyId } = req.params;
@@ -116,7 +104,6 @@ const deleteSet = async (req, res) => {
 };
 
 module.exports = {
-  getUserSets,
   createSet,
   getSetsByFaculty,
   editSet,
