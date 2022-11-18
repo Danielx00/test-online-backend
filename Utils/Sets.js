@@ -63,6 +63,7 @@ const editSet = async (req, res) => {
         message: "Set doesn't exist",
       });
     }
+    // move this to upper to the if statement
     const updatedSet = await Set.findByIdAndUpdate(
       setId,
       {
