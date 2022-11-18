@@ -36,6 +36,8 @@ app.use('/api/faculties', require('./routes/faculties'));
 
 app.use('/api/sets', require('./routes/sets'));
 
+app.use('/api/questions', require('./routes/questions'));
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
