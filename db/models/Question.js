@@ -5,9 +5,17 @@ const Question = new Schema({
     type: String,
     required: true,
   },
+  disabledEdit: {
+    type: Boolean,
+    default: true,
+  },
+  points: {
+    type: Number,
+    default: 0,
+  },
   answers: {
     type: Array,
-    default: null,
+    default: [],
   },
 });
 module.exports = model('questions', Question);
