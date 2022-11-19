@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const Question = new Schema({
-  title: {
+  question: {
     type: String,
     required: true,
   },
@@ -13,9 +13,6 @@ const Question = new Schema({
     type: Number,
     default: 0,
   },
-  answers: {
-    type: Array,
-    default: [],
-  },
+  answers: { type: Array, ref: 'answers', default: [] },
 });
 module.exports = model('questions', Question);

@@ -13,7 +13,6 @@ const getAllFaculties = async (req, res) => {
     title: faculty.title,
     img: faculty.img,
   }));
-  console.log(mappedFaculty);
   res.status(200).json({
     faculties: mappedFaculty,
   });
