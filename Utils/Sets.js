@@ -110,10 +110,23 @@ const deleteSet = async (req, res) => {
     });
   }
 };
+const getAllSets = async (req, res) => {
+  const { user } = req;
+  try {
+    const sets = await Set.find({ owner: user.id });
+    res.status(200).json(sets);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 
 module.exports = {
   createSet,
   getSetsByFaculty,
   editSet,
   deleteSet,
+  getAllSets,
 };

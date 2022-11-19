@@ -4,6 +4,7 @@ const {
   getSetsByFaculty,
   editSet,
   deleteSet,
+  getAllSets,
 } = require('../Utils/Sets');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -41,5 +42,9 @@ router.delete(
     await deleteSet(req, res);
   }
 );
+// get all sets user
+router.get('/', userAuth, checkRole(['employee']), async (req, res) => {
+  await getAllSets(req, res);
+});
 
 module.exports = router;
