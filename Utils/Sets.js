@@ -1,4 +1,5 @@
 const Set = require('../db/models/Set');
+const Question = require('../db/models/Question');
 
 const getSetsByFaculty = async (req, res) => {
   const { user } = req;
@@ -82,6 +83,7 @@ const editSet = async (req, res) => {
 const deleteSet = async (req, res) => {
   const { user } = req;
   const { setId } = req.params;
+  const questionsIds = [];
 
   try {
     const setToDelete = await Set.findById(setId);
@@ -98,7 +100,16 @@ const deleteSet = async (req, res) => {
         message: "Set doesn't exist",
       });
     }
-    await Set.findByIdAndDelete(setId);
+    const deletedSet = await Set.findByIdAndDelete(setId);
+    const ids = deletedSet.questions;
+
+    ids.forEach((id) => questionsIds.push(id._id.toHexString()));
+    if (questionsIds.length) {
+      await Question.deleteMany({
+        _id: { $in: questionsIds },
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: 'Set successfuly deleted',
