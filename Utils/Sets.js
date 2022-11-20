@@ -58,21 +58,21 @@ const editSet = async (req, res) => {
           message: 'You are not allowed to do it',
         });
       }
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Set doesn't exist",
-      });
+      const updatedSet = await Set.findByIdAndUpdate(
+        setId,
+        {
+          $set: set,
+        },
+        { new: true }
+      );
+      return res.status(200).json(updatedSet);
     }
+    return res.status(400).json({
+      success: false,
+      message: "Set doesn't exist",
+    });
+
     // move this to upper to the if statement
-    const updatedSet = await Set.findByIdAndUpdate(
-      setId,
-      {
-        $set: set,
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedSet);
   } catch (err) {
     res.status(500).json({
       success: false,
