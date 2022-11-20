@@ -14,5 +14,6 @@ const Question = new Schema({
     default: 0,
   },
   answers: { type: Array, ref: 'answers', default: [] },
+  setId: { type: Schema.Types.ObjectId, ref: 'sets' },
 });
 module.exports = model('questions', Question);
