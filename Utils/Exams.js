@@ -122,9 +122,46 @@ const getAllExams = async (req, res) => {
     });
   }
 };
+const editExam = async (req, res) => {
+  const { user } = req;
+  const exam = req.body;
+  const { examId } = req.params;
+
+  try {
+    const examToEdit = await Exam.findById(examId);
+    if (examToEdit) {
+      if (user.id !== examToEdit.owner.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'You are not allowed to do it',
+        });
+      }
+      const updatedExam = await Exam.findByIdAndUpdate(
+        examId,
+        {
+          $set: exam,
+        },
+        { new: true }
+      );
+      return res.status(200).json(updatedExam);
+    }
+    return res.status(404).json({
+      success: false,
+      message: "Exam doesn't exist",
+    });
+
+    // move this to upper to the if statement
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
   getExamByFaculty,
   getAllExams,
+  editExam,
 };

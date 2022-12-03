@@ -4,6 +4,7 @@ const {
   deleteExam,
   getAllExams,
   getExamByFaculty,
+  editExam,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -35,6 +36,15 @@ router.get(
   checkRole(['employee']),
   async (req, res) => {
     await getExamByFaculty(req, res);
+  }
+);
+// update exam
+router.patch(
+  '/:examId',
+  userAuth,
+  checkRole(['employee']),
+  async (req, res) => {
+    await editExam(req, res);
   }
 );
 
