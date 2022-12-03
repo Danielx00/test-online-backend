@@ -1,5 +1,6 @@
 const Exam = require('../db/models/Exam');
 const Faculty = require('../db/models/Faculty');
+const Set = require('../db/models/Set');
 
 const createExam = async (req, res) => {
   const exam = req.body;
@@ -31,6 +32,99 @@ const createExam = async (req, res) => {
     });
   }
 };
+
+const deleteExam = async (req, res) => {
+  const { user } = req;
+  const { examId } = req.params;
+  try {
+    const examToDelete = await Exam.findById(examId);
+    if (examToDelete) {
+      if (user.id !== examToDelete.owner.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'You are not allowed to do it',
+        });
+      }
+      await Exam.findByIdAndDelete(examId);
+      return res.status(200).json({
+        success: true,
+        message: 'Exam successfully deleted',
+      });
+    }
+    return res.status(404).json({
+      success: false,
+      message: "Exam doesn't exist",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
+
+const getExamByFaculty = async (req, res) => {
+  const { user } = req;
+  const { facultyId } = req.params;
+  try {
+    const exams = await Exam.find({
+      $and: [{ owner: user.id }, { faculty: facultyId }],
+    });
+    const ids = exams.map(({ set }) => set);
+    const sets = await Set.find({ _id: { $in: ids } });
+    const serializeSets = sets.map((set) => ({
+      _id: set._id,
+      title: set.title,
+    }));
+    const serializeExams = exams.map((exam) => ({
+      _id: exam._id,
+      date: exam.date,
+      description: exam.description,
+      title: exam.title,
+      startExam: exam.startExam,
+      endExam: exam.endExam,
+      students: exam.students,
+      set: { ...serializeSets },
+    }));
+    res.status(200).json(serializeExams);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
+const getAllExams = async (req, res) => {
+  const { user } = req;
+  try {
+    const exams = await Exam.find({ owner: user.id });
+    const ids = exams.map(({ set }) => set);
+    const sets = await Set.find({ _id: { $in: ids } });
+    const serializeSets = sets.map((set) => ({
+      _id: set._id,
+      title: set.title,
+    }));
+    const serializeExams = exams.map((exam) => ({
+      _id: exam._id,
+      date: exam.date,
+      description: exam.description,
+      title: exam.title,
+      startExam: exam.startExam,
+      endExam: exam.endExam,
+      students: exam.students,
+      set: { ...serializeSets },
+    }));
+    res.status(200).json(serializeExams);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
+  deleteExam,
+  getExamByFaculty,
+  getAllExams,
 };
