@@ -84,7 +84,9 @@ const getExamByFaculty = async (req, res) => {
       startExam: exam.startExam,
       endExam: exam.endExam,
       students: exam.students,
-      set: { ...serializeSets },
+      set: serializeSets.filter(
+        (set) => set._id.toString() === exam.set.toString()
+      ),
     }));
     res.status(200).json(serializeExams);
   } catch (err) {
@@ -112,7 +114,9 @@ const getAllExams = async (req, res) => {
       startExam: exam.startExam,
       endExam: exam.endExam,
       students: exam.students,
-      set: { ...serializeSets },
+      set: serializeSets.filter(
+        (set) => set._id.toString() === exam.set.toString()
+      ),
     }));
     res.status(200).json(serializeExams);
   } catch (err) {
