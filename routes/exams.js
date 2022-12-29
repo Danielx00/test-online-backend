@@ -6,6 +6,7 @@ const {
   getExamByFaculty,
   editExam,
   getExamsForStudentByFaculty,
+  getAllStudentTests,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -52,6 +53,11 @@ router.patch(
 // get exam assigned for student by faculty
 router.get('/:facultyId/student', userAuth, async (req, res) => {
   await getExamsForStudentByFaculty(req, res);
+});
+
+// get all student exams
+router.get('/students/exams', userAuth, async (req, res) => {
+  await getAllStudentTests(req, res);
 });
 
 module.exports = router;

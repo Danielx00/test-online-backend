@@ -199,6 +199,19 @@ const getExamsForStudentByFaculty = async (req, res) => {
     });
   }
 };
+const getAllStudentTests = async (req, res) => {
+  const { user } = req;
+  try {
+    const exams = await StudentExam.find({ student: user.numberOfIndex });
+
+    res.status(200).json(exams);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -206,4 +219,5 @@ module.exports = {
   getAllExams,
   editExam,
   getExamsForStudentByFaculty,
+  getAllStudentTests,
 };
