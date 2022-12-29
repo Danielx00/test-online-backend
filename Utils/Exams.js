@@ -1,6 +1,7 @@
 const Exam = require('../db/models/Exam');
 const Faculty = require('../db/models/Faculty');
 const Set = require('../db/models/Set');
+const StudentExam = require('../db/models/StudentExam');
 
 const createExam = async (req, res) => {
   const exam = req.body;
@@ -24,6 +25,13 @@ const createExam = async (req, res) => {
     });
 
     const savedExam = await newExam.save();
+    savedExam.students.forEach((student) => {
+      StudentExam.insertMany({
+        assignedExam: savedExam._id,
+        student,
+        faculty: facultyId,
+      });
+    });
     res.status(200).json(savedExam);
   } catch (err) {
     res.status(500).json({
@@ -162,10 +170,40 @@ const editExam = async (req, res) => {
     });
   }
 };
+
+const getExamsForStudentByFaculty = async (req, res) => {
+  const { user } = req;
+  const { facultyId } = req.params;
+  const ids = [];
+  try {
+    const exams = await StudentExam.find({
+      $and: [{ student: user.numberOfIndex }, { faculty: facultyId }],
+    });
+    const faculty = await Faculty.findById(facultyId);
+    exams.forEach((exam) => ids.push(exam.assignedExam));
+    const examsDetails = await Exam.find({ _id: { $in: ids } });
+    const serializeStudentExam = examsDetails.map((exam, index) => ({
+      _id: exams[index]._id,
+      title: exam.title,
+      description: exam.description,
+      date: exam.date,
+      startExam: exam.startExam,
+      endExam: exam.endExam,
+      faculty: faculty.title,
+    }));
+    res.status(200).json({ serializeStudentExam });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
   getExamByFaculty,
   getAllExams,
   editExam,
+  getExamsForStudentByFaculty,
 };
