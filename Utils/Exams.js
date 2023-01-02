@@ -207,6 +207,7 @@ const getAllStudentTests = async (req, res) => {
   const facultiesIds = [];
   try {
     const exams = await StudentExam.find({ student: user.numberOfIndex });
+    // TODO:   display here only checked tests(bug) if admin delete exam
     exams.forEach((exam) => examsIds.push(exam.assignedExam));
     exams.forEach((exam) => facultiesIds.push(exam.faculty));
     const examsDetails = await Exam.find({ _id: { $in: examsIds } });

@@ -15,6 +15,10 @@ const Answer = new Schema({
         type: Boolean,
         default: false,
       },
+      checked: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
 });
