@@ -23,7 +23,9 @@ const createQuestion = async (req, res) => {
         question: question.question,
         disabledEdit: question.disabledEdit,
         points: question.points,
-        answers: question.answers.length ? newAnswers.answers : [],
+        answers: question.answers.length
+          ? newAnswers.answers
+          : [{ answer: '' }],
         setId,
       });
       const savedQuestion = await newQuestion.save();

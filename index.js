@@ -41,5 +41,5 @@ app.use('/api/questions', require('./routes/questions'));
 app.use('/api/exams', require('./routes/exams'));
 
 app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+  console.log(`Server is running on port ${process.env.PORT}` || 5000);
 });

@@ -2,6 +2,7 @@ const Exam = require('../db/models/Exam');
 const Faculty = require('../db/models/Faculty');
 const Set = require('../db/models/Set');
 const StudentExam = require('../db/models/StudentExam');
+const Question = require('../db/models/Question');
 
 const createExam = async (req, res) => {
   const exam = req.body;
@@ -228,6 +229,28 @@ const getAllStudentTests = async (req, res) => {
     });
   }
 };
+
+const getAllExamQuestions = async (req, res) => {
+  const { user } = req;
+  const { studentExamId } = req.params;
+  try {
+    const exam = await StudentExam.findById(studentExamId);
+    if (user.numberOfIndex === exam.student && exam.status === 'Accessible') {
+      const assignedExam = await Exam.findById(exam.assignedExam);
+      const set = await Set.findById(assignedExam.set);
+      const questions = await Question.find({ _id: { $in: set.questions } });
+      return res.status(200).json(questions);
+    }
+    return res.status(403).json({
+      message: 'Forbidden',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -236,4 +259,5 @@ module.exports = {
   editExam,
   getExamsForStudentByFaculty,
   getAllStudentTests,
+  getAllExamQuestions,
 };

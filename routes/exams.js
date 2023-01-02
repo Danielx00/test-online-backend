@@ -7,6 +7,7 @@ const {
   editExam,
   getExamsForStudentByFaculty,
   getAllStudentTests,
+  getAllExamQuestions,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -58,6 +59,11 @@ router.get('/:facultyId/student', userAuth, async (req, res) => {
 // get all student exams
 router.get('/students/exams', userAuth, async (req, res) => {
   await getAllStudentTests(req, res);
+});
+
+// get questions for student exam to start exam
+router.get('/students/:studentExamId', userAuth, async (req, res) => {
+  await getAllExamQuestions(req, res);
 });
 
 module.exports = router;
