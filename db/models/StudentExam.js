@@ -15,6 +15,8 @@ const StudentExamSchema = new Schema({
   status: { type: String, default: 'Inaccessible' },
   questions: { type: Array, default: [] },
   faculty: { type: Schema.Types.ObjectId, ref: 'faculties' },
+  scoredPoints: { type: Number, default: 0 },
+  maxPoints: { type: Number, default: 0 },
 });
 
 module.exports = model('studentExams', StudentExamSchema);
