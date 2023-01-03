@@ -8,6 +8,7 @@ const {
   getExamsForStudentByFaculty,
   getAllStudentTests,
   getAllExamQuestions,
+  checkStudentAnswers,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -64,6 +65,9 @@ router.get('/students/exams', userAuth, async (req, res) => {
 // get questions for student exam to start exam
 router.get('/students/:studentExamId', userAuth, async (req, res) => {
   await getAllExamQuestions(req, res);
+});
+router.patch('/students/:studentExamId', userAuth, async (req, res) => {
+  await checkStudentAnswers(req, res);
 });
 
 module.exports = router;

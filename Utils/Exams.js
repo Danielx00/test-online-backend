@@ -209,14 +209,11 @@ const getExamsForStudentByFaculty = async (req, res) => {
 };
 const getAllStudentTests = async (req, res) => {
   const { user } = req;
-  const facultiesIds = [];
   try {
     const exams = await StudentExam.find({
       $and: [{ student: user.numberOfIndex }, { status: 'Checked' }],
     });
     // TODO:   display here only checked tests(bug) if admin delete exam
-    exams.forEach((exam) => facultiesIds.push(exam.faculty));
-    const faculties = await Faculty.find({ _id: { $in: facultiesIds } });
     const serializeStudentExam = exams.map((exam, index) => ({
       _id: exam._id,
       title: exam.title,
@@ -226,7 +223,6 @@ const getAllStudentTests = async (req, res) => {
       endExam: exam.endExam,
       status: exam.status,
       answers: exam.answers,
-      faculty: faculties[index].title,
     }));
     res.status(200).json(serializeStudentExam);
   } catch (err) {
@@ -258,6 +254,53 @@ const getAllExamQuestions = async (req, res) => {
     });
   }
 };
+const checkStudentAnswers = async (req, res) => {
+  const { questions: studentQuestions } = req.body;
+  const { studentExamId } = req.params;
+  let points = 0;
+  let maxPoints = 0;
+  studentQuestions.forEach((question) => {
+    question.answers.forEach((answer) => {
+      if (question.points > 0) {
+        maxPoints += question.points;
+      }
+      if (answer.checked && answer.points > 0) {
+        points += answer.points;
+      }
+      if (answer.points > 0) {
+        maxPoints += answer.points;
+      }
+    });
+  });
+  const questionWithAnswersToUpdate = studentQuestions.map((question) => ({
+    _id: question._id,
+    question: question.question,
+    points: question.points,
+    note: '',
+    answers: question.answers,
+  }));
+  try {
+    await StudentExam.update(
+      { _id: studentExamId },
+      {
+        $set: {
+          scoredPoints: points,
+          maxPoints,
+          questions: questionWithAnswersToUpdate,
+          status: 'Checked',
+        },
+      }
+    );
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+  return res.status(200).json({
+    success: true,
+  });
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -267,4 +310,5 @@ module.exports = {
   getExamsForStudentByFaculty,
   getAllStudentTests,
   getAllExamQuestions,
+  checkStudentAnswers,
 };
