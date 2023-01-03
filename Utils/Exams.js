@@ -34,6 +34,7 @@ const createExam = async (req, res) => {
         endExam: savedExam.endExam,
         date: savedExam.date,
         assignedExam: savedExam._id,
+        setId: savedExam.set,
         student,
         faculty: facultyId,
       });
