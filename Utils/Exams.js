@@ -28,6 +28,11 @@ const createExam = async (req, res) => {
     const savedExam = await newExam.save();
     savedExam.students.forEach((student) => {
       StudentExam.insertMany({
+        title: savedExam.title,
+        description: savedExam.description,
+        startExam: savedExam.startExam,
+        endExam: savedExam.endExam,
+        date: savedExam.date,
         assignedExam: savedExam._id,
         student,
         faculty: facultyId,
@@ -203,23 +208,23 @@ const getExamsForStudentByFaculty = async (req, res) => {
 };
 const getAllStudentTests = async (req, res) => {
   const { user } = req;
-  const examsIds = [];
   const facultiesIds = [];
   try {
-    const exams = await StudentExam.find({ student: user.numberOfIndex });
+    const exams = await StudentExam.find({
+      $and: [{ student: user.numberOfIndex }, { status: 'Checked' }],
+    });
     // TODO:   display here only checked tests(bug) if admin delete exam
-    exams.forEach((exam) => examsIds.push(exam.assignedExam));
     exams.forEach((exam) => facultiesIds.push(exam.faculty));
-    const examsDetails = await Exam.find({ _id: { $in: examsIds } });
     const faculties = await Faculty.find({ _id: { $in: facultiesIds } });
-    const serializeStudentExam = examsDetails.map((exam, index) => ({
-      _id: exams[index]._id,
+    const serializeStudentExam = exams.map((exam, index) => ({
+      _id: exam._id,
       title: exam.title,
       description: exam.description,
       date: exam.date,
       startExam: exam.startExam,
       endExam: exam.endExam,
-      status: exams[index].status,
+      status: exam.status,
+      answers: exam.answers,
       faculty: faculties[index].title,
     }));
     res.status(200).json(serializeStudentExam);
