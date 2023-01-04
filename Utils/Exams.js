@@ -301,6 +301,29 @@ const checkStudentAnswers = async (req, res) => {
     success: true,
   });
 };
+const getStudentCheckedExam = async (req, res) => {
+  const { studentExamId } = req.params;
+  const { user } = req;
+  try {
+    const exam = await StudentExam.findById(studentExamId);
+    if (user.numberOfIndex === exam.student && exam.status === 'Checked') {
+      return res.status(200).json({
+        scoredPoints: exam.scoredPoints,
+        maxPoints: exam.maxPoints,
+        questions: exam.questions,
+      });
+    }
+    return res.status(403).json({
+      success: false,
+      message: 'Forbidden',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -311,4 +334,5 @@ module.exports = {
   getAllStudentTests,
   getAllExamQuestions,
   checkStudentAnswers,
+  getStudentCheckedExam,
 };

@@ -9,6 +9,7 @@ const {
   getAllStudentTests,
   getAllExamQuestions,
   checkStudentAnswers,
+  getStudentCheckedExam,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -66,8 +67,17 @@ router.get('/students/exams', userAuth, async (req, res) => {
 router.get('/students/:studentExamId', userAuth, async (req, res) => {
   await getAllExamQuestions(req, res);
 });
+// send student questions and check it on backend
 router.patch('/students/:studentExamId', userAuth, async (req, res) => {
   await checkStudentAnswers(req, res);
 });
+// overview checked student's exam
+router.get(
+  '/students/overview-exam/:studentExamId',
+  userAuth,
+  async (req, res) => {
+    await getStudentCheckedExam(req, res);
+  }
+);
 
 module.exports = router;
