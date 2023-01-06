@@ -280,9 +280,6 @@ const checkStudentAnswers = async (req, res) => {
   studentQuestions.forEach((question) => {
     if (question.answers.length === 1) openQuestions++;
     question.answers.forEach((answer) => {
-      if (question.points > 0) {
-        maxPoints += question.points;
-      }
       if (answer.checked && answer.points > 0) {
         points += answer.points;
       }
@@ -385,6 +382,54 @@ const getReturnedStudentExam = async (req, res) => {
     });
   }
 };
+const checkStudentExam = async (req, res) => {
+  const { questions: studentQuestions } = req.body;
+  const { studentExamId } = req.params;
+
+  let points = 0;
+  let maxPoints = 0;
+  studentQuestions.forEach((question) => {
+    question.answers.forEach((answer) => {
+      if (question.points > 0) {
+        points += question.points;
+      }
+      if (answer.checked && answer.points > 0) {
+        points += answer.points;
+      }
+      if (answer.points > 0) {
+        maxPoints += answer.points;
+      }
+    });
+  });
+  const questionWithAnswersToUpdate = studentQuestions.map((question) => ({
+    _id: question._id,
+    question: question.question,
+    points: question.points,
+    note: question.note,
+    answers: question.answers,
+  }));
+  try {
+    await StudentExam.update(
+      { _id: studentExamId },
+      {
+        $set: {
+          scoredPoints: points,
+          maxPoints,
+          questions: questionWithAnswersToUpdate,
+          status: 'Checked',
+        },
+      }
+    );
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+  return res.status(200).json({
+    success: true,
+  });
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -398,4 +443,5 @@ module.exports = {
   getStudentCheckedExam,
   getAllStudentsExams,
   getReturnedStudentExam,
+  checkStudentExam,
 };
