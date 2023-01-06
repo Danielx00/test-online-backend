@@ -60,6 +60,14 @@ const deleteExam = async (req, res) => {
           message: 'You are not allowed to do it',
         });
       }
+      const studentExams = await StudentExam.find({
+        status: { $in: 'Inaccessible' },
+      })
+        .where('assignedExam')
+        .in(examId)
+        .select(['_id'])
+        .exec();
+      await StudentExam.deleteMany({ _id: { $in: studentExams } });
       await Exam.findByIdAndDelete(examId);
       return res.status(200).json({
         success: true,
@@ -186,17 +194,21 @@ const getExamsForStudentByFaculty = async (req, res) => {
     const exams = await StudentExam.find({
       $and: [{ student: user.numberOfIndex }, { faculty: facultyId }],
     });
+    // TODO:try to refactor it to not filter just get properly data from db
+    const filteredArray = exams.filter(
+      (exam) => exam.status === 'Inaccessible' || exam.status === 'Accessible'
+    );
     const faculty = await Faculty.findById(facultyId);
-    exams.forEach((exam) => ids.push(exam.assignedExam));
+    filteredArray.forEach((exam) => ids.push(exam.assignedExam));
     const examsDetails = await Exam.find({ _id: { $in: ids } });
     const serializeStudentExam = examsDetails.map((exam, index) => ({
-      _id: exams[index]._id,
+      _id: filteredArray[index]._id,
       title: exam.title,
       description: exam.description,
       date: exam.date,
       startExam: exam.startExam,
       endExam: exam.endExam,
-      status: exams[index].status,
+      status: filteredArray[index].status,
       faculty: faculty.title,
     }));
     res.status(200).json(serializeStudentExam);
@@ -211,10 +223,14 @@ const getAllStudentTests = async (req, res) => {
   const { user } = req;
   try {
     const exams = await StudentExam.find({
-      $and: [{ student: user.numberOfIndex }, { status: 'Checked' }],
+      $and: [{ student: user.numberOfIndex }],
     });
+    // TODO:try to refactor it to not filter just get properly data from db
+    const filteredExams = exams.filter(
+      (exam) => exam.status === 'Checked' || exam.status === 'Checking'
+    );
     // TODO:   display here only checked tests(bug) if admin delete exam
-    const serializeStudentExam = exams.map((exam, index) => ({
+    const serializeStudentExam = filteredExams.map((exam) => ({
       _id: exam._id,
       title: exam.title,
       description: exam.description,
@@ -257,9 +273,12 @@ const getAllExamQuestions = async (req, res) => {
 const checkStudentAnswers = async (req, res) => {
   const { questions: studentQuestions } = req.body;
   const { studentExamId } = req.params;
+  let openQuestions = 0;
   let points = 0;
   let maxPoints = 0;
+
   studentQuestions.forEach((question) => {
+    if (question.answers.length === 1) openQuestions++;
     question.answers.forEach((answer) => {
       if (question.points > 0) {
         maxPoints += question.points;
@@ -287,7 +306,7 @@ const checkStudentAnswers = async (req, res) => {
           scoredPoints: points,
           maxPoints,
           questions: questionWithAnswersToUpdate,
-          status: 'Checked',
+          status: openQuestions ? 'Checking' : 'Checked',
           returnTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
         },
       }
@@ -325,6 +344,32 @@ const getStudentCheckedExam = async (req, res) => {
     });
   }
 };
+const getAllStudentsExams = async (req, res) => {
+  const { assignedExamId } = req.params;
+  try {
+    const studentsExams = await StudentExam.find()
+      .where('assignedExam')
+      .in(assignedExamId)
+      .select([
+        '_id',
+        'student',
+        'returnTime',
+        'status',
+        'scoredPoints',
+        'maxPoints',
+      ])
+      .exec();
+    const examsToReturn = studentsExams.filter(
+      (exam) => exam.returnTime.length !== 0
+    );
+    return res.status(200).json(examsToReturn);
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -336,4 +381,5 @@ module.exports = {
   getAllExamQuestions,
   checkStudentAnswers,
   getStudentCheckedExam,
+  getAllStudentsExams,
 };

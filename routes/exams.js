@@ -10,6 +10,7 @@ const {
   getAllExamQuestions,
   checkStudentAnswers,
   getStudentCheckedExam,
+  getAllStudentsExams,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -77,6 +78,14 @@ router.get(
   userAuth,
   async (req, res) => {
     await getStudentCheckedExam(req, res);
+  }
+);
+router.get(
+  '/students/allTests/:assignedExamId',
+  userAuth,
+  checkRole(['employee']),
+  async (req, res) => {
+    await getAllStudentsExams(req, res);
   }
 );
 
