@@ -11,6 +11,7 @@ const {
   checkStudentAnswers,
   getStudentCheckedExam,
   getAllStudentsExams,
+  getReturnedStudentExam,
 } = require('../Utils/Exams');
 const { userAuth, checkRole } = require('../Utils/Auth');
 
@@ -86,6 +87,14 @@ router.get(
   checkRole(['employee']),
   async (req, res) => {
     await getAllStudentsExams(req, res);
+  }
+);
+router.get(
+  '/students/tests/:studentExamId',
+  userAuth,
+  checkRole(['employee']),
+  async (req, res) => {
+    await getReturnedStudentExam(req, res);
   }
 );
 

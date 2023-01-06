@@ -370,6 +370,21 @@ const getAllStudentsExams = async (req, res) => {
     });
   }
 };
+
+const getReturnedStudentExam = async (req, res) => {
+  const { studentExamId } = req.params;
+  try {
+    const exam = await StudentExam.findById(studentExamId);
+    return res.status(200).json({
+      questions: exam.questions,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${err}`,
+    });
+  }
+};
 module.exports = {
   createExam,
   deleteExam,
@@ -382,4 +397,5 @@ module.exports = {
   checkStudentAnswers,
   getStudentCheckedExam,
   getAllStudentsExams,
+  getReturnedStudentExam,
 };
