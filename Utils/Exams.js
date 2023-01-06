@@ -288,6 +288,7 @@ const checkStudentAnswers = async (req, res) => {
           maxPoints,
           questions: questionWithAnswersToUpdate,
           status: 'Checked',
+          returnTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
         },
       }
     );

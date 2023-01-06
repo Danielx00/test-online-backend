@@ -10,6 +10,7 @@ const StudentExamSchema = new Schema({
     required: true,
   },
   assignedExam: { type: Schema.Types.ObjectId, ref: 'exams' },
+  returnTime: { type: String, default: '' },
   student: { type: Schema.Types.Number, ref: 'users' },
   setId: { type: Schema.Types.ObjectId, ref: 'sets' },
   status: { type: String, default: 'Inaccessible' },
