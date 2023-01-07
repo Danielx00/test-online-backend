@@ -16,7 +16,7 @@ const ExamSchema = new Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   startExam: {

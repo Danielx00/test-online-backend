@@ -6,7 +6,7 @@ const StudentExamSchema = new Schema({
   startExam: { type: String, required: true },
   endExam: { type: String, required: true },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   assignedExam: { type: Schema.Types.ObjectId, ref: 'exams' },
