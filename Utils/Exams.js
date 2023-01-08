@@ -259,7 +259,8 @@ const getAllExamQuestions = async (req, res) => {
       const assignedExam = await Exam.findById(exam.assignedExam);
       const set = await Set.findById(assignedExam.set);
       const questions = await Question.find({ _id: { $in: set.questions } });
-      return res.status(200).json(questions);
+      const endDate = `${exam.date}T${exam.endExam}:00`;
+      return res.status(200).json({ questions, endDate });
     }
     return res.status(403).json({
       message: 'Forbidden',
