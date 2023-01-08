@@ -5,6 +5,7 @@ const passport = require('passport');
 require('./db/mongoose');
 require('dotenv/config');
 const cron = require('node-cron');
+const { padTo2Digits } = require('./Utils/Time');
 const StudentExam = require('./db/models/StudentExam');
 // Initialize the application
 // const Exam = require('./db/models/Exam');
@@ -42,18 +43,17 @@ app.use('/api/questions', require('./routes/questions'));
 
 app.use('/api/exams', require('./routes/exams'));
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('* * * * * ', async () => {
   const actualDate = new Date().toJSON().slice(0, 10);
-  const hours = new Date().getHours();
-  const minutes = new Date().getMinutes();
-  const hoursMin = `${+hours}:${+minutes}`;
+  const hours = padTo2Digits(new Date().getHours());
+  const minutes = padTo2Digits(new Date().getMinutes());
+  const hoursAndMinutes = `${hours}:${minutes}`;
   let idsToUpdate = [];
-  const todayDateToCompare = `${actualDate} ${hoursMin}`;
+  const todayDateToCompare = `${actualDate} ${hoursAndMinutes}`;
 
   const exams = await StudentExam.find({ date: { $in: actualDate } })
     .select(['_id', 'startExam', 'status', 'date'])
     .exec();
-
   exams.forEach((exam) => {
     if (
       todayDateToCompare >= `${exam.date} ${exam.startExam}` &&

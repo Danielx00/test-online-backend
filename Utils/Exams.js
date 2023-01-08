@@ -3,6 +3,7 @@ const Faculty = require('../db/models/Faculty');
 const Set = require('../db/models/Set');
 const StudentExam = require('../db/models/StudentExam');
 const Question = require('../db/models/Question');
+const { padTo2Digits } = require('./Time');
 
 const createExam = async (req, res) => {
   const exam = req.body;
@@ -304,7 +305,9 @@ const checkStudentAnswers = async (req, res) => {
           maxPoints,
           questions: questionWithAnswersToUpdate,
           status: openQuestions ? 'Checking' : 'Checked',
-          returnTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
+          returnTime: `${padTo2Digits(new Date().getHours())}:${padTo2Digits(
+            new Date().getMinutes()
+          )}`,
         },
       }
     );
