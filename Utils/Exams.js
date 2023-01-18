@@ -10,9 +10,7 @@ const createExam = async (req, res) => {
   const { user } = req;
   const { facultyId } = req.params;
   const faculty = await Faculty.findById(facultyId);
-  /**
-   * TODO add relation to faculties [add employee to each faculty then check if employee exist in this faculty]
-   */
+
   if (!faculty) {
     return res.status(400).json({
       success: false,
@@ -226,11 +224,9 @@ const getAllStudentTests = async (req, res) => {
     const exams = await StudentExam.find({
       $and: [{ student: user.numberOfIndex }],
     });
-    // TODO:try to refactor it to not filter just get properly data from db
     const filteredExams = exams.filter(
       (exam) => exam.status === 'Checked' || exam.status === 'Checking'
     );
-    // TODO:   display here only checked tests(bug) if admin delete exam
     const serializeStudentExam = filteredExams.map((exam) => ({
       _id: exam._id,
       title: exam.title,
